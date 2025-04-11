@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "async": "^3.2.5",
+    "axe-core": "^4.10.3",
     "chai": "^4.4.1",
     "colors": "1.4.0",
     "eslint": "^6.8.0",
@@ -63,6 +64,7 @@
     "eslint-plugin-markdown": "^2.2.0",
     "eslint-plugin-mocha": "^6.3.0",
     "eslint-plugin-security": "^1.7.1",
+    "jsdom": "^26.0.0",
     "mocha": "^11.1.0",
     "newman": "^6.1.2",
     "parse-gitignore": "^1.0.1",

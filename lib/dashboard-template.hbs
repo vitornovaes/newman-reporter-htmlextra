@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/default.min.css">
+  <link rel="stylesheet" href="lib/design-system.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.css"/>
 
 <style>
@@ -452,9 +454,34 @@ body.theme-light code {
             setTheme('theme-light');
         }
     }
+
+    function setContrast(contrastName) {
+        localStorage.setItem('contrast', contrastName);
+        if (contrastName === 'high-contrast-mode') {
+            document.body.classList.add('high-contrast-mode');
+        } else {
+            document.body.classList.remove('high-contrast-mode');
+        }
+    }
+
+    function toggleContrast() {
+        if (localStorage.getItem('contrast') !== 'high-contrast-mode') {
+            setContrast('high-contrast-mode');
+        } else {
+            setContrast('default-contrast');
+            localStorage.removeItem('contrast');
+            if (localStorage.getItem('theme') === 'theme-dark') {
+                setTheme('theme-dark'); // Re-apply dark theme to ensure correct colors
+            } else {
+                setTheme('theme-light'); // Re-apply light theme
+            }
+        }
+    }
 </script>
-  <div class="container">
-        <div class="container">
+<header class="app-header" role="banner">
+<header class="app-header">
+  <div class="app-container">
+        <div class="app-container">
             <label>Light</label>
             <label id="switch" class="switch">
                 <input type="checkbox" onchange="toggleTheme()" id="slider">
@@ -462,70 +489,83 @@ body.theme-light code {
             </label>
             <label>Dark</label>
         </div>
+        <div class="app-container">
+            <label>High Contrast</label>
+            <label id="contrastSwitch" class="switch">
+                <input type="checkbox" onchange="toggleContrast()" id="contrastSlider">
+                <span class="slider round"></span>
+            </label>
+        </div>
         {{#with summary}}
+<nav class="main-nav" role="navigation" aria-label="Main Navigation">
+<nav class="main-nav">
         <div class="card">
         <div class="card-header">
-            <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
-            <li class="nav-item bg-info active" data-toggle="tooltip" title="Click to view the Summary">
-                <a class="nav-link text-white" id="pills-summary-tab" data-toggle="pill" href="#pills-summary" role="tab" aria-controls="pills-summary" aria-selected="true">Summary</a>
+            <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist" aria-label="Report Sections">
+            <li class="nav-item bg-info active" role="presentation">
+                <a class="nav-link text-white" id="pills-summary-tab" data-toggle="pill" href="#pills-summary" role="tab" aria-controls="pills-summary" aria-selected="true" tabindex="0" data-toggle="tooltip" title="Click to view the Summary">Summary</a>
             </li>
-            <li class="nav-item bg-success" data-toggle="tooltip" title="Click to view the Requests">
-                <a class="nav-link text-white" id="pills-requests-tab" data-toggle="pill" href="#pills-requests" role="tab" aria-controls="pills-requests" aria-selected="false">Total Requests <span class="badge badge-light">{{stats.requests.total}}</span></a>
+            <li class="nav-item bg-success" role="presentation">
+                <a class="nav-link text-white" id="pills-requests-tab" data-toggle="pill" href="#pills-requests" role="tab" aria-controls="pills-requests" aria-selected="false" tabindex="-1" data-toggle="tooltip" title="Click to view the Requests">Total Requests <span class="badge badge-light">{{stats.requests.total}}</span></a>
             </li>
-            <li class="nav-item bg-danger" data-toggle="tooltip" title="Click to view the Failed Tests">
-                <a class="nav-link text-white" id="pills-failed-tab" data-toggle="pill" href="#pills-failed" role="tab" aria-controls="pills-failed" aria-selected="false">Failed Tests <span class="badge badge-light">{{failures.length}}</span></a>
+            <li class="nav-item bg-danger" role="presentation">
+                <a class="nav-link text-white" id="pills-failed-tab" data-toggle="pill" href="#pills-failed" role="tab" aria-controls="pills-failed" aria-selected="false" tabindex="-1" data-toggle="tooltip" title="Click to view the Failed Tests">Failed Tests <span class="badge badge-light">{{failures.length}}</span></a>
             </li>
             <li class="nav-item bg-warning" data-toggle="tooltip" title="Click to view the Skipped Tests">
                 <a class="nav-link text-white" id="pills-skipped-tab" data-toggle="pill" href="#pills-skipped" role="tab" aria-controls="pills-skipped" aria-selected="false">Skipped Tests <span class="badge badge-light">{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}</span></a>
+</nav>
             </li>
             </ul>
         {{/with}}
         <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-summary" role="tabcard" aria-labelledby="pills-summary-tab">
-<div class="row">
-  <div class="col-md-9 col-lg-12 main">
+            <div class="tab-pane fade show active" id="pills-summary" role="tabpanel" aria-labelledby="pills-summary-tab">
+<div class="grid-row">
+  <div class="grid-col main">
+<main class="main-content" role="main">
+<main class="main-content">
    <h1 class="display-{{titleSize}} text-center">{{title}}</h1>
    <h5 class="text-center">{{timestamp}}</h5>
+</header>
 {{#with summary}}
-   <div class="row">
-    <div class="col-lg-3 col-md-6">
+   <div class="grid-row">
+    <div class="grid-col" role="region" aria-label="Summary: Total Iterations">
      <div class="card text-white card-success">
       <div class="card-body {{#gt failures.length 0}}bg-danger{{else}}bg-success{{/gt}}">
        <div class="rotate">
-        <i class="fa fa-retweet fa-5x"></i>
+        <i class="fa fa-retweet fa-5x" aria-hidden="true"></i>
        </div>
        <h6 class="text-uppercase">Total Iterations</h6>
        <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{stats.iterations.total}}</h1>
       </div>
      </div>
     </div>
-    <div class="col-lg-3 col-md-6">
+    <div class="grid-col" role="region" aria-label="Summary: Total Assertions">
      <div class="card text-white card-danger">
       <div class="card-body bg-success">
        <div class="rotate">
-        <i class="fa fa-list fa-4x"></i>
+        <i class="fa fa-list fa-4x" aria-hidden="true"></i>
        </div>
        <h6 class="text-uppercase">Total Assertions</h6>
        <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{totalTests stats.assertions.total skippedTests.length}}</h1>
       </div>
      </div>
     </div>
-    <div class="col-lg-3 col-md-6">
+    <div class="grid-col" role="region" aria-label="Summary: Total Failed Tests">
      <div class="card text-white card-info">
       <div class="card-body {{#gt failures.length 0}}bg-danger{{else}}bg-success{{/gt}}">
        <div class="rotate">
-        <i class="fa fa-plus-circle fa-5x"></i>
+        <i class="fa fa-plus-circle fa-5x" aria-hidden="true"></i>
        </div>
        <h6 class="text-uppercase">Total Failed Tests</h6>
        <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{failures.length}}</h1>
       </div>
      </div>
     </div>
-    <div class="col-lg-3 col-md-6">
+    <div class="grid-col" role="region" aria-label="Summary: Total Skipped Tests">
      <div class="card text-white card-warning">
       <div class="card-body {{#gt skippedTests.length 0}}bg-warning{{else}}bg-success{{/gt}}">
        <div class="rotate">
-        <i class="fa fa-share fa-5x"></i>
+        <i class="fa fa-share fa-5x" aria-hidden="true"></i>
        </div>
        <h6 class="text-uppercase">Total Skipped Tests</h6>
        <h1 class="display-{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}">{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}</h1>
@@ -534,10 +574,10 @@ body.theme-light code {
     </div>
    </div>
    <hr>
-    <div class="row">
+    <div class="grid-row">
     <div class="col">
-        <div class="row">
-        <div class="col-sm-12 mb-3">
+        <div class="grid-row">
+        <div class="grid-col mb-3">
             <div class="card border-info">
                 <div class="card-body">
                 <h5 class="card-title text-uppercase text-white text-center bg-info">File Information</h5>
@@ -552,9 +592,9 @@ body.theme-light code {
         </div>
         {{#if @root.showGlobalData}}
         {{#if globals.values.members.length}}
-         <div class="row">
-            <div class="col-sm-12 mb-3">
-                <div class="card-deck">
+         <div class="grid-row">
+            <div class="grid-col mb-3">
+                <div class="card-group">
                 <div class="card border-info" style="width: 50rem;">
                     <h5 class="card-header bg-info text-center text-uppercase" style="height: 45px;">
                         <a data-toggle="collapse" href="#global-values" aria-expanded="true" aria-controls="collapse-example" id="global-heading" class="env-heading collapsed d-block" style="color: white;">
@@ -590,9 +630,9 @@ body.theme-light code {
         {{/if}}
         {{#if @root.showEnvironmentData}}
         {{#if environment.values.members.length}}
-         <div class="row">
-            <div class="col-sm-12 mb-3">
-                <div class="card-deck">
+         <div class="grid-row">
+            <div class="grid-col mb-3">
+                <div class="card-group">
                 <div class="card border-info" style="width: 50rem;">
                     <h5 class="card-header bg-info text-center text-uppercase" style="height: 45px;">
                         <a data-toggle="collapse" href="#environment-values" aria-expanded="true" aria-controls="collapse-example" id="environment-heading" class="env-heading collapsed d-block" style="color: white;">
@@ -627,8 +667,8 @@ body.theme-light code {
         {{/if}}
         {{/if}}
         {{#if collection.description}}
-        <div class="row">
-        <div class="col-sm-12 mb-3">
+        <div class="grid-row">
+        <div class="grid-col mb-3">
             <div class="card border-info">
                 <div class="card-body">
                 <h5 class="card-title text-uppercase text-white text-center bg-info">Collection Description</h5>
@@ -640,8 +680,8 @@ body.theme-light code {
         </div>
         </div>
         {{/if}}
-        <div class="row">
-        <div class="col-sm-12 mb-3">
+        <div class="grid-row">
+        <div class="grid-col mb-3">
             <div class="card border-info">
                 <div class="card-body">
                 <h5 class="card-title text-uppercase text-white text-center bg-info">Timings and Data</h5>
@@ -653,8 +693,8 @@ body.theme-light code {
         </div>
         </div>
     {{/with}}
-        <div class="row">
-        <div class="col-sm-12 mb-3">
+        <div class="grid-row">
+        <div class="grid-col mb-3">
             <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead class="thead-inverse">
@@ -705,7 +745,7 @@ body.theme-light code {
   </div>
  </div>
         </div>
-            <div class="tab-pane fade" id="pills-failed" role="tabcard" aria-labelledby="pills-failed-tab">
+            <div class="tab-pane fade" id="pills-failed" role="tabpanel" aria-labelledby="pills-failed-tab">
                 <button id="topOfFailuresScreen" class="btn btn-outline-success btn-sm backToTop" onclick="topFunction()">Go To Top</button>
 
                 {{#if summary.failures.length}}
@@ -721,8 +761,8 @@ body.theme-light code {
                     </div>
                     {{/with}}
                     {{#each summary.failures}}
-                    <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                    <div class="grid-col mb-3">
+                    <div class="card-group">
                         <div class="card border-danger">
                             <div class="card-header bg-danger">
                                 <a data-toggle="collapse" href="#" data-target="#fails-collapse-{{error.id}}" aria-expanded="false" aria-controls="collapse" id="fails-{{error.id}}" class="collapsed text-white z-block">
@@ -750,7 +790,7 @@ body.theme-light code {
                 {{/if}}
             </div>
 
-            <div class="tab-pane fade" id="pills-skipped" role="tabcard" aria-labelledby="pills-skipped-tab">
+            <div class="tab-pane fade" id="pills-skipped" role="tabpanel" aria-labelledby="pills-skipped-tab">
                 <button id="topOfSkippedScreen" class="btn btn-outline-success btn-sm backToTop" onclick="topFunction()">Go To Top</button>
 
                 {{#if summary.skippedTests.length}}
@@ -766,8 +806,8 @@ body.theme-light code {
                     </div>
                     {{/with}}
                     {{#each summary.skippedTests}}
-                    <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                    <div class="grid-col mb-3">
+                    <div class="card-group">
                         <div class="card border-warning">
                             <div class="card-header bg-warning text-white">
                                 <a data-toggle="collapse" href="#" data-target="#skipped-collapse-{{cursor.ref}}" aria-expanded="false" aria-controls="collapse" id="skipped-{{cursor.ref}}" class="collapsed text-white z-block">
@@ -789,7 +829,7 @@ body.theme-light code {
                 </div>
                 {{/if}}
             </div>
-            <div class="tab-pane fade" id="pills-requests" role="tabcard" aria-labelledby="pills-requests-tab">
+            <div class="tab-pane fade" id="pills-requests" role="tabpanel" aria-labelledby="pills-requests-tab">
 
             <button id="topOfRequestsScreen" class="btn btn-outline-success btn-sm backToTop" onclick="topFunction()">Go To Top</button>
 
@@ -842,9 +882,9 @@ body.theme-light code {
 {{#if @root.showFolderDescription}}
 {{#if parent.description.content}}
 
-    <div class="row">
-        <div class="col-sm-12 mb-3">
-        <div class="card-deck">
+    <div class="grid-row">
+        <div class="grid-col mb-3">
+        <div class="card-group">
             <div class="card border-info" style="width: 50rem;">
                 <div class="card-body">
                 <h5 class="card-title text-uppercase text-white text-center bg-info">Folder Description</h5>
@@ -876,9 +916,9 @@ body.theme-light code {
             <div class="card-body">
                 {{#with request}}
                 {{#if description.content}}
-                <div class="row">
-                    <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                <div class="grid-row">
+                    <div class="grid-col mb-3">
+                    <div class="card-group">
                         <div class="card border-info" style="width: 50rem;">
                             <div class="card-body">
                             <h5 class="card-title text-uppercase text-white text-center bg-info">Request Description</h5>
@@ -892,9 +932,9 @@ body.theme-light code {
                 </div>
                 {{/if}}
                 {{/with}}
-                <div class="row">
-                    <div class="col-sm-12 mb-3">
-                        <div class="card-deck">
+                <div class="grid-row">
+                    <div class="grid-col mb-3">
+                        <div class="card-group">
                         <div class="card border-info" style="width: 50rem;">
                             <div class="card-body">
                             <h5 class="card-title text-uppercase text-white text-center bg-info">Request Information</h5>
@@ -933,9 +973,9 @@ body.theme-light code {
                 {{#with request}}
                 {{#unless @root.omitHeaders}}
                 {{#unless @root.skipSensitiveData}}
-                <div class="row">
-                    <div class="col-sm-12 mb-3">
-                        <div class="card-deck">
+                <div class="grid-row">
+                    <div class="grid-col mb-3">
+                        <div class="card-group">
                         <div class="card border-info" style="width: 50rem;">
                             <div class="card-body">
                                 <h5 class="card-title text-uppercase text-white text-center bg-info">Request Headers</h5>
@@ -969,9 +1009,9 @@ body.theme-light code {
                 {{#isNotIn item.name @root.hideRequestBody}}
                 {{#with request}}
                 {{#if body.raw}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                <div class="grid-row">
+                <div class="grid-col mb-3">
+                    <div class="card-group">
                     <div class="card border-info" style="width: 50rem;">
                         <div class="card-body">
                             <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
@@ -996,9 +1036,9 @@ body.theme-light code {
                 {{#isNotIn item.name @root.hideRequestBody}}
                 {{#with request}}
                 {{#if body.formdata.members}}
-                    <div class="row">
-                        <div class="col-sm-12 mb-3">
-                            <div class="card-deck">
+                    <div class="grid-row">
+                        <div class="grid-col mb-3">
+                            <div class="card-group">
                                 <div class="card border-info" style="width: 50rem;">
                                     <div class="card-body">
                                         <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
@@ -1023,9 +1063,9 @@ body.theme-light code {
                 {{#isNotIn item.name @root.hideRequestBody}}
                 {{#with request}}
                 {{#if body.urlencoded.members}}
-                    <div class="row">
-                        <div class="col-sm-12 mb-3">
-                            <div class="card-deck">
+                    <div class="grid-row">
+                        <div class="grid-col mb-3">
+                            <div class="card-group">
                                 <div class="card border-info" style="width: 50rem;">
                                     <div class="card-body">
                                         <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
@@ -1050,9 +1090,9 @@ body.theme-light code {
                 {{#isNotIn item.name @root.hideRequestBody}}
                 {{#with request}}
                 {{#if body.graphql}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                <div class="grid-row">
+                <div class="grid-col mb-3">
+                    <div class="card-group">
                     <div class="card border-info" style="width: 50rem;">
                         <div class="card-body">
                             <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
@@ -1080,9 +1120,9 @@ body.theme-light code {
                 {{/unless}}
                 {{#unless @root.omitHeaders}}
                 {{#unless @root.skipSensitiveData}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                <div class="grid-row">
+                <div class="grid-col mb-3">
+                    <div class="card-group">
                     <div class="card border-info" style="width: 50rem;">
                         <div class="card-body">
                             <h5 class="card-title text-uppercase text-white text-center bg-info">Response Headers</h5>
@@ -1113,9 +1153,9 @@ body.theme-light code {
                 {{#unless @root.skipSensitiveData}}
                 {{#unless @root.omitResponseBodies}}
                 {{#isNotIn item.name @root.hideResponseBody}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                <div class="grid-row">
+                <div class="grid-col mb-3">
+                    <div class="card-group">
                     <div class="card border-info" style="width: 50rem;">
                         <div class="card-body">
                             <h5 class="card-title text-uppercase text-white text-center bg-info">Response Body</h5>
@@ -1138,9 +1178,9 @@ body.theme-light code {
                 {{/unless}}
                 {{/unless}}
                 {{#if consoleLogs.length}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
+                <div class="grid-row">
+                <div class="grid-col mb-3">
+                    <div class="card-group">
                     <div class="card border-info" style="width: 50rem;">
                         <div class="card-body">
                             <h5 class="card-title text-uppercase text-white text-center bg-info">Console Logs</h5>
@@ -1164,7 +1204,7 @@ body.theme-light code {
                 </div>
                 </div>
                 {{/if}}
-                <div class="row">
+                <div class="grid-row">
                     <div class="card border-info">
                         <div class="card-body">
                         <h5 class="card-title text-uppercase text-white text-center bg-info">Test Information</h5>
@@ -1193,8 +1233,8 @@ body.theme-light code {
                                 </table>
                             </div>
                             <div class="row {{#lte cumulativeTests.failed 0}}d-none{{/lte}}">
-                            <div class="col-sm-12 mb-3">
-                                <div class="card-deck">
+                            <div class="grid-col mb-3">
+                                <div class="card-group">
                                 <div class="card border-danger" style="width: 50rem;">
                                     <div class="card-body">
                                         <h5 class="card-title text-uppercase text-white text-center bg-danger">Test {{#lte cumulativeTests.failed 1}}Failure{{else}}Failures{{/lte}}</h5>
@@ -1260,6 +1300,20 @@ body.theme-light code {
   $(document).ready( function () {
     document.getElementById('slider').checked = sliderChecked;
   });
+})();
+
+(function () {
+    var contrastSliderChecked = false;
+    if (localStorage.getItem('contrast') === 'high-contrast-mode') {
+        setContrast('high-contrast-mode');
+        contrastSliderChecked = true;
+    } else {
+        setContrast('default-contrast');
+        contrastSliderChecked = false;
+    }
+    $(document).ready(function () {
+        document.getElementById('contrastSlider').checked = contrastSliderChecked;
+    });
 })();
 </script>
 
@@ -1659,10 +1713,120 @@ $('#showOnlyFailures').on('click', function(e) {
 	$("#filterInput").val()!="" && clickCount==1 ? $("#filterInput").val('').trigger('input'): null;
     let selectedIteration = $('#iterationList li').filter(function () {
         return $(this).css('border-bottom').indexOf("solid") > -1 && $(this).hasClass('itFailed');
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+// Highlight all code blocks
+Prism.highlightAll();
+</script>
+<script>
+// Accessible tab switching with keyboard navigation
+const tablist = document.querySelector('[role="tablist"]');
+if (tablist) {
+  const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+  const tabPanels = document.querySelectorAll('[role="tabpanel"]');
+  let currentTabIndex = 0; // Track the currently focused tab index
+
+  // Function to activate a tab
+  function activateTab(tab) {
+    tabs.forEach(t => {
+      t.setAttribute('aria-selected', 'false');
+      t.setAttribute('tabindex', '-1'); // Make non-active tabs not focusable directly
+      t.closest('[role="presentation"]').classList.remove('active'); // Update parent li too
+      t.classList.remove('active');
+    });
+
+    tabPanels.forEach(panel => {
+      panel.classList.remove('show', 'active');
+    });
+
+    tab.setAttribute('aria-selected', 'true');
+    tab.setAttribute('tabindex', '0'); // Make active tab focusable
+    tab.closest('[role="presentation"]').classList.add('active'); // Update parent li too
+    tab.classList.add('active');
+
+
+    const panelId = tab.getAttribute('aria-controls');
+    const panel = document.getElementById(panelId);
+    if (panel) {
+      panel.classList.add('show', 'active');
+    }
+  }
+
+  // Add click event listeners
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', e => {
+      e.preventDefault();
+      activateTab(tab);
+      currentTabIndex = index; // Update current index on click
+    });
+
+    // Add keyboard navigation
+    tab.addEventListener('keydown', e => {
+      let newIndex = currentTabIndex;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        newIndex = (currentTabIndex + 1) % tabs.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        newIndex = (currentTabIndex - 1 + tabs.length) % tabs.length;
+      } else if (e.key === 'Home') {
+        newIndex = 0;
+      } else if (e.key === 'End') {
+        newIndex = tabs.length - 1;
+      } else {
+        return; // Ignore other keys
+      }
+
+      e.preventDefault(); // Prevent default arrow key scrolling
+      tabs[newIndex].focus(); // Move focus to the new tab
+      // Optionally activate on focus change, or require Enter/Space to activate
+      // activateTab(tabs[newIndex]); // Uncomment to activate on arrow navigation
+      currentTabIndex = newIndex; // Update current index
+    });
+
+     // Activate tab on Enter or Space press when focused
+     tab.addEventListener('keyup', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            activateTab(tab);
+            currentTabIndex = tabs.indexOf(tab);
+        }
+     });
+  });
+
+  // Initialize the first tab
+  if (tabs.length > 0) {
+    // Find the initially active tab if any, otherwise default to first
+    const initialActiveTab = tabs.find(t => t.getAttribute('aria-selected') === 'true') || tabs[0];
+    activateTab(initialActiveTab);
+    currentTabIndex = tabs.indexOf(initialActiveTab);
+  }
+}
+
+// Theme toggle
+const themeToggle = document.getElementById('theme-toggle') || document.getElementById('slider');
+if(themeToggle) {
+  themeToggle.addEventListener('change', () => {
+    document.body.classList.toggle('light-mode');
+    document.body.classList.toggle('dark-mode');
+    const theme = document.body.classList.contains('dark-mode') ? 'theme-dark' : 'theme-light';
+    localStorage.setItem('theme', theme);
+  });
+}
+
+// Contrast toggle
+const contrastToggle = document.getElementById('contrastSwitch') || document.getElementById('contrastSlider');
+if (contrastToggle) {
+  contrastToggle.addEventListener('change', () => {
+    document.body.classList.toggle('high-contrast-mode');
+    const contrast = document.body.classList.contains('high-contrast-mode') ? 'high-contrast-mode' : 'default-contrast';
+    localStorage.setItem('contrast', contrast);
+  });
+}
+</script>
     });
     selectedIteration.length || clickCount > 1 ? null : $("#iterationList li.itFailed")[0].click()
     $("#iterationList li.itPassed").toggle()
     $("div.bg-success [id*=requests]").parents('[class^="row iteration-"]').toggle();
+</main>
     clickCount = clickCount > 1 ? 1 : ++clickCount;
     clickCount > 1 ? $("#showOnlyFailures").html("Show All Iterations") : $("#showOnlyFailures").html("Show Failed Iterations");
     $(this).data("clickCount", clickCount)
