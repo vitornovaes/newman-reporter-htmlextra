@@ -1574,7 +1574,7 @@ window.onload = function () {
   // set display for all blocks of response
   var allItems = document.querySelectorAll('[class*=iteration-]');
   allItems.forEach(function(elem){
-    elem.style.display = 'block';
+    elem.style.display = 'block'; // Changed to 'block' to show all iterations by default
   });
 
   {{#with summary}} {{#with stats}}
@@ -1614,8 +1614,8 @@ window.onload = function () {
   }
 
   //shows first tab data
-  document.getElementById('iteration-0').click();
-  document.getElementById('iterationSelected').innerHTML = `Iteration ${document.getElementById('iteration-0').innerHTML} selected`
+  // document.getElementById('iteration-0').click(); // Commented out to show all iterations by default
+  document.getElementById('iterationSelected').innerHTML = 'All Iterations Displayed'; // Update the message
 
   {{#each aggregations}}
   {{#each executions}}
@@ -1633,7 +1633,8 @@ window.onload = function () {
 $(document).ready(function(){
     $(function() {
         $("#iterationList li").click(function() {
-            document.getElementById('iterationSelected').innerHTML = "Iteration " + this.innerHTML + " selected"
+            document.getElementById('iterationSelected').innerHTML = "Iteration " + this.innerHTML + " selected";
+            // The rest of the tab click logic remains to ensure filtering works
         });
     });
 });
